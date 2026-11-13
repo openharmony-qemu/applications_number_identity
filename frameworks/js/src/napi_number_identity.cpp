@@ -107,6 +107,9 @@ static inline bool CheckSystemAppCall(napi_env env, const char *funcName)
 
 static inline JsError NapiError(int32_t errCode, const char *funcName, const char *permission)
 {
+    if (errCode == NUMBER_IDENTITY_ERR_PERMISSION_ERR) {
+        errCode = TELEPHONY_ERR_PERMISSION_ERR;
+    }
     return NapiUtil::ConverErrorMessageWithPermissionForJs(errCode, funcName, permission);
 }
 

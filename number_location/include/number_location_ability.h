@@ -16,6 +16,7 @@
 #ifndef NUMBER_LOCATION_DB_ABILITY_H
 #define NUMBER_LOCATION_DB_ABILITY_H
 
+#include <cstdint>
 #include "__mutex_base"
 #include "ability.h"
 #include "ability_lifecycle.h"
@@ -41,6 +42,7 @@ public:
     NumberLocationAbility();
     virtual ~NumberLocationAbility() override;
     static NumberLocationAbility* Create();
+    uint64_t GetNativeObservationInstance() const { return nativeObservationInstance_; }
     virtual void OnStart(const AppExecFwk::Want &want) override;
     sptr<IRemoteObject> OnConnect(const AAFwk::Want &want) override;
     virtual int Insert(const Uri &uri, const DataShare::DataShareValuesBucket &value) override;
@@ -53,6 +55,7 @@ public:
 
 private:
     std::mutex lock_;
+    uint64_t nativeObservationInstance_ = 0;
 };
 } // namespace Telephony
 } // namespace OHOS

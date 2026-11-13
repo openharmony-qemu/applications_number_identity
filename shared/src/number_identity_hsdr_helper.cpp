@@ -283,11 +283,11 @@ int32_t HsdrCallbackStub::OnRemoteRequest(
         onError_(NUMBER_IDENTITY_ERR_READ_DATA_FAIL);
         return NUMBER_IDENTITY_ERR_READ_DATA_FAIL;
     });
-    NUMBER_IDENTITY_LOGI("body vector length %{public}ld", body.size());
+    NUMBER_IDENTITY_LOGI("body vector length %{public}zu", body.size());
     for (auto &str : body) {
         response.body += OHOS::Str16ToStr8(str);
     }
-    NUMBER_IDENTITY_LOGI("body total length %{public}ld", response.body.size());
+    NUMBER_IDENTITY_LOGI("body total length %{public}zu", response.body.size());
     onResponse_(response);
     NUMBER_IDENTITY_LOGI("HsdrCallbackStub::OnRemoteRequest done.");
     return errCode;

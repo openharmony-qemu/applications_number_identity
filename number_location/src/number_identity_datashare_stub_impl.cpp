@@ -18,6 +18,8 @@
 #include "number_identity_datashare_stub_impl.h"
 #include "number_identity_errors.h"
 #include "number_identity_log_wrapper.h"
+#include "number_identity_native_trace.h"
+#include "ipc_skeleton.h"
 #include "download_file_ability.h"
 #include "number_identity_rdb_helper.h"
 
@@ -68,19 +70,31 @@ std::shared_ptr<DataShareResultSet> NumberIdentityDataShareStubImpl::Query(const
     const DataSharePredicates &predicates, std::vector<std::string> &columns, DatashareBusinessError &businessError)
 {
     NUMBER_IDENTITY_LOGD("Query begin.");
+    const uint64_t observedRequest = Telephony::NumberNativeObservation495::NextId();
+    const int observedCallingPid = IPCSkeleton::GetCallingPid();
+    const int observedCallingUid = IPCSkeleton::GetCallingUid();
+    const uint32_t observedCallingToken = IPCSkeleton::GetCallingTokenID();
+    const int observedRoute = Telephony::NumberNativeObservation495::Route(uri.ToString());
+    auto observeQuery = [&](const char *event, int result) {
+        Telephony::NumberNativeObservation495::Observe(event, nativeObservationInstance_, nativeObservationConnection_,
+            observedRequest, observedRoute, result, observedCallingPid, observedCallingUid, observedCallingToken);
+    };
+    observeQuery("query-enter", -1);
     auto extension = GetOwner(uri);
     if (extension == nullptr) {
         NUMBER_IDENTITY_LOGE("Query failed, extension is null.");
+        observeQuery("query-result", 0);
         return nullptr;
     }
     auto resultSet = extension->Query(uri, predicates, columns, businessError);
     NUMBER_IDENTITY_LOGD("Query end.");
+    observeQuery("query-result", resultSet != nullptr ? 1 : 0);
     return resultSet;
 }
 
 int NumberIdentityDataShareStubImpl::BatchInsert(const Uri &uri, const std::vector<DataShareValuesBucket> &values)
 {
-    NUMBER_IDENTITY_LOGI("BatchInsert begin, got %{public}lu record(s).", values.size());
+    NUMBER_IDENTITY_LOGI("BatchInsert begin, got %{public}zu record(s).", values.size());
     auto extension = GetOwner(uri);
     if (extension == nullptr) {
         NUMBER_IDENTITY_LOGE("BatchInsert failed, extension is null.");

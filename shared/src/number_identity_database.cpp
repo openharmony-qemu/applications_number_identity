@@ -56,7 +56,7 @@ int NumberIdentityDatabase::Insert(RdbStore &store, const string &table, const V
 {
     int64_t outRowId;
     auto errCode = store.Insert(outRowId, table, values);
-    NUMBER_IDENTITY_LOGI("Inserted 1 row into table %{public}s, rowId = %{public}ld", table.c_str(), outRowId);
+    NUMBER_IDENTITY_LOGI("Inserted 1 row into table %{public}s, rowId = %{public}lld", table.c_str(), static_cast<long long>(outRowId));
     return errCode;
 }
 
@@ -64,7 +64,7 @@ int NumberIdentityDatabase::BatchInsert(RdbStore &store, const string &table, co
 {
     int64_t outInsertNum;
     auto errCode = store.BatchInsert(outInsertNum, table, valuesList);
-    NUMBER_IDENTITY_LOGI("Inserted %{public}ld rows into table %{public}s.", outInsertNum, table.c_str());
+    NUMBER_IDENTITY_LOGI("Inserted %{public}lld rows into table %{public}s.", static_cast<long long>(outInsertNum), table.c_str());
     return errCode;
 }
 

@@ -39,7 +39,7 @@ ohos_app("NumberIdentity") {
   build_level = "module"
   build_modules = [ "numberidentity" ]
   if (defined(sign_hap_py_path)) {
-    certificate_profile = "${certificate_profile_path}"
+    certificate_profile = "./signature/NumberIdentity.hapRelease.p7b"
     key_alias = "NumberIdentity"
     private_key_path = "NumberIdentity"
     compatible_version = "11"

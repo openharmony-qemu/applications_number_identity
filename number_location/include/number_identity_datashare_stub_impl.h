@@ -16,6 +16,7 @@
 #ifndef DATASHARE_STUB_IMPL_H
 #define DATASHARE_STUB_IMPL_H
 
+#include <cstdint>
 #include "datashare_stub.h"
 #include "datashare_ext_ability.h"
 
@@ -44,6 +45,12 @@ public:
     Uri NormalizeUri(const Uri &uri) override;
     Uri DenormalizeUri(const Uri &uri) override;
 
+    // Assigned once before this new stub is returned to the connection caller.
+    void SetNativeObservationIdentity(uint64_t instance, uint64_t connection)
+    {
+        nativeObservationInstance_ = instance;
+        nativeObservationConnection_ = connection;
+    }
     void SetNumberLocationAbility(std::shared_ptr<DataShareExtAbility> extension);
     void SetDownloadFileAbility(std::shared_ptr<DataShareExtAbility> extension);
     void SetNumberMarkAbility(std::shared_ptr<DataShareExtAbility> extension);
@@ -54,6 +61,8 @@ private:
     std::shared_ptr<DataShareExtAbility> GetNumberMarkAbility();
     std::shared_ptr<DataShareExtAbility> GetOwner(const Uri &uri);
 private:
+    uint64_t nativeObservationInstance_ = 0;
+    uint64_t nativeObservationConnection_ = 0;
     std::mutex setNumberLocationMutex_;
     std::mutex downloadFileMutex_;
     std::mutex numberMarkMutex_;

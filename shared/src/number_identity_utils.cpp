@@ -252,7 +252,7 @@ void TimeLogger::TimeStart()
 void TimeLogger::TimeEnd(const char *tag)
 {
     auto current = GetCurrentTimestamp();
-    NUMBER_IDENTITY_LOGI("%{public}s time cost: %{public}ld(ms)", tag, current - startTime_);
+    NUMBER_IDENTITY_LOGI("%{public}s time cost: %{public}llu(ms)", tag, static_cast<unsigned long long>(current - startTime_));
 }
 
 } // namespace Telephony

@@ -71,7 +71,7 @@ NativeDataResultSetBridge::NativeDataResultSetBridge(const NativeDataSet &dataSe
 NumberIdentityResultSetBridge<vector<NativeData>>::WriteFunc g_writeNativeData =
     [](Writer &writer, const vector<NativeData> &record, uint32_t columnIndex) -> int {
     if (columnIndex >= record.size()) {
-        NUMBER_IDENTITY_LOGE("%{public}u >= %{public}lu skipped", columnIndex, record.size());
+        NUMBER_IDENTITY_LOGE("%{public}u >= %{public}zu skipped", columnIndex, record.size());
         return NativeRdb::E_OK;
     }
     const NativeData *cell = &record[columnIndex];

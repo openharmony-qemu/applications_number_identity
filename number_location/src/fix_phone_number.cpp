@@ -69,7 +69,7 @@ std::string FixPhoneNumber::SubstringFixedPhoneNumber()
     std::string resultString = fixPhoneNumber_;
     std::string temp = GetFixParseResult();
     if (!temp.empty() && !areaCode_.empty()) {
-        NUMBER_IDENTITY_LOGI("Deleted area code, length = %{public}ld.", areaCode_.size());
+        NUMBER_IDENTITY_LOGI("Deleted area code, length = %{public}zu.", areaCode_.size());
         resultString = fixPhoneNumber_.substr(areaCode_.size());
     }
     return resultString;

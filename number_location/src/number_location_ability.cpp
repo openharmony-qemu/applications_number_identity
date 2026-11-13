@@ -25,6 +25,7 @@
 #include "number_identity_datashare_stub_impl.h"
 #include "number_identity_errors.h"
 #include "number_identity_log_wrapper.h"
+#include "number_identity_native_trace.h"
 #include "number_location_manager.h"
 #include "number_location_result_set_bridge.h"
 #include "rdb_errno.h"
@@ -40,7 +41,8 @@ using AppExecFwk::AbilityLoader;
 using namespace NativeRdb;
 namespace Telephony {
 
-NumberLocationAbility::NumberLocationAbility() : DataShareExtAbility() {}
+NumberLocationAbility::NumberLocationAbility() : DataShareExtAbility(),
+    nativeObservationInstance_(NumberNativeObservation495::NextId()) {}
 
 NumberLocationAbility::~NumberLocationAbility() {}
 
@@ -48,31 +50,43 @@ NumberLocationAbility *NumberLocationAbility::Create()
 {
     NUMBER_IDENTITY_LOGD("NumberLocationAbility::Create begin.");
     auto self = new NumberLocationAbility();
+    NumberNativeObservation495::Observe("create-result", self != nullptr ? self->GetNativeObservationInstance() : 0,
+        0, 0, 0, self != nullptr ? 1 : 0);
     return self;
 }
 
 static DataShare::DataShareExtAbility *NumberLocationDataShareCreator(const std::unique_ptr<Runtime> &runtime)
 {
     NUMBER_IDENTITY_LOGD("NumberLocationDataShareCreator::%{public}s begin.", __func__);
-    return NumberLocationAbility::Create();
+    NumberNativeObservation495::Observe("creator-enter", 0, 0, 0, 0, -1);
+    auto result = NumberLocationAbility::Create();
+    NumberNativeObservation495::Observe("creator-result", result != nullptr ? result->GetNativeObservationInstance() : 0,
+        0, 0, 0, result != nullptr ? 1 : 0);
+    return result;
 }
 
 __attribute__((constructor)) void RegisterDataShareCreator()
 {
     NUMBER_IDENTITY_LOGD("NumberLocationDataShareCreator::%{public}s", __func__);
+    NumberNativeObservation495::Observe("register-enter", 0, 0, 0, 0, -1);
     DataShare::DataShareExtAbility::SetCreator(NumberLocationDataShareCreator);
+    NumberNativeObservation495::Observe("register-result", 0, 0, 0, 0, 1);
 }
 
 sptr<IRemoteObject> NumberLocationAbility::OnConnect(const AAFwk::Want &want)
 {
     NUMBER_IDENTITY_LOGD("NumberLocationAbility::OnConnect");
+    const uint64_t observedConnection = NumberNativeObservation495::NextId();
+    NumberNativeObservation495::Observe("connect-enter", nativeObservationInstance_, observedConnection, 0, 0, -1);
     Extension::OnConnect(want);
     sptr<DataShare::NumberIdentityDataShareStubImpl> remoteObject =
         new (std::nothrow) DataShare::NumberIdentityDataShareStubImpl();
     if (remoteObject == nullptr) {
         NUMBER_IDENTITY_LOGE("%{public}s No memory allocated for DataShareStubImpl", __func__);
+        NumberNativeObservation495::Observe("connect-result", nativeObservationInstance_, observedConnection, 0, 0, 0);
         return nullptr;
     }
+    remoteObject->SetNativeObservationIdentity(nativeObservationInstance_, observedConnection);
     remoteObject->SetNumberLocationAbility(std::static_pointer_cast<NumberLocationAbility>(shared_from_this()));
     std::shared_ptr<NumberMarkAbility> numberMarkAbility(NumberMarkAbility::Create(GetContext()));
     remoteObject->SetNumberMarkAbility(std::static_pointer_cast<NumberMarkAbility>(numberMarkAbility));
@@ -80,7 +94,10 @@ sptr<IRemoteObject> NumberLocationAbility::OnConnect(const AAFwk::Want &want)
     std::shared_ptr<DownloadFileAbility> downloadFileAbility(DownloadFileAbility::Create(GetContext()));
     remoteObject->SetDownloadFileAbility(std::static_pointer_cast<DownloadFileAbility>(downloadFileAbility));
     NUMBER_IDENTITY_LOGI("DownloadFileAbility %{public}s end.", __func__);
-    return remoteObject->AsObject();
+    auto result = remoteObject->AsObject();
+    NumberNativeObservation495::Observe("connect-result", nativeObservationInstance_, observedConnection, 0, 0,
+        result != nullptr ? 1 : 0);
+    return result;
 }
 
 void NumberLocationAbility::OnStart(const AppExecFwk::Want &want)

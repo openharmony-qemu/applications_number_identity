@@ -288,7 +288,7 @@ TransformNumber TransformYellowPageNumber = [](const string &number) {
 
 TransformNumber TransformNumberMarkNumber = [](const string &number) {
     auto transformed = NumberMarkManager::StandardizationPhoneNum(number);
-    NUMBER_IDENTITY_LOGI("TransformNumberMarkNumber number size(%{public}ld), transformed size(%{public}ld)",
+    NUMBER_IDENTITY_LOGI("TransformNumberMarkNumber number size(%{public}zu), transformed size(%{public}zu)",
         number.size(), transformed.size());
     if (number.size() != transformed.size()) {
         NUMBER_IDENTITY_LOGI("number and transformed size is not equal.");
@@ -566,7 +566,7 @@ shared_ptr<DataShareResultSet> NumberMarkAbility::QueryNumberMarks(
         NumberMarkInfo markInfo;
         errCode = QueryByPhoneNumber(phoneNumber, markInfo, businessError);
         if (errCode != E_OK) {
-            NUMBER_IDENTITY_LOGE("number mark query row %{public}ld failed! errCode = %{public}d", i, errCode);
+            NUMBER_IDENTITY_LOGE("number mark query row %{public}zu failed! errCode = %{public}d", i, errCode);
             // Assign with empty NumberMarkInfo.
             markInfo = NumberMarkInfo();
         };
@@ -588,7 +588,7 @@ int NumberMarkAbility::QueryByPhoneNumber(
     int errCode = this->QueryLocalYellowPage(phoneNumber, yellowPages, businessError);
     HANDLE_BUSINESS_ERROR("QueryYellowPage", errCode, businessError, return errCode);
     if (auto it = FindYellowPageBestMatch(phoneNumber, yellowPages); it.has_value()) {
-        NUMBER_IDENTITY_LOGI("Got %{public}ld Yellow page, 1st = %{public}s", yellowPages.size(), TO_C_STR(it->name));
+        NUMBER_IDENTITY_LOGI("Got %{public}zu Yellow page, 1st = %{public}s", yellowPages.size(), TO_C_STR(it->name));
         markInfo.FromYellowPage(*it);
         return SetBusinessError(businessError, errCode);
     }
@@ -987,7 +987,7 @@ int NumberMarkAbility::UpdateCallLog(const NumberMarkModel &numberMark)
 void NumberMarkAbility::dealMarkSource(const NumberMarkModel &numberMark, DataShareValuesBucket &values)
 {
     NUMBER_IDENTITY_LOGI("mark type: %{public}d, supplier: %{public}s.",
-        numberMark.MarkType(), numberMark.supplier->c_str());
+        numberMark.MarkType(), numberMark.supplier.value_or("").c_str());
     if (numberMark.MarkType() == MarkType::MARK_TYPE_FRAUD && numberMark.supplier == CALL_MARK_SOURCE_FOR_AFS) {
         bool isAntiFraudCenterSwitchOn =
             isAntifraudSwitchOn(ANTIFRAUD_CENTER_BUNDLE_NAME, ANTIFRAUD_CENTER_SWITCH);

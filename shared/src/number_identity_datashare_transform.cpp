@@ -190,7 +190,7 @@ vector<OperationItem> StringFieldProxy::TransformSqlIn(const OperationItem &item
     for (size_t i = 0; i < valueSetPtr->size(); ++i) {
         const auto &value = valueSetPtr->at(i);
         if (auto iter = mapping.find(value); iter != mapping.end()) {
-            NUMBER_IDENTITY_LOGI("duplicated in condition for %{public}s, index = %{public}lu", field->c_str(), i);
+            NUMBER_IDENTITY_LOGI("duplicated in condition for %{public}s, index = %{public}zu", field->c_str(), i);
         } else {
             auto transformed = this->transform(value);
             mapping[value] = transformed;

@@ -60,7 +60,7 @@ int NetworkInfo::Refresh()
     NetAllCapabilities netAllCap;
     errCode = net.GetNetCapabilities(netHandle, netAllCap);
     auto bearerTypesCount = netAllCap.bearerTypes_.size();
-    NUMBER_IDENTITY_LOGI("capabilities size: %{public}ld, errCode %{public}d ", bearerTypesCount, errCode);
+    NUMBER_IDENTITY_LOGI("capabilities size: %{public}zu, errCode %{public}d ", bearerTypesCount, errCode);
     if (ERR_OK != errCode || bearerTypesCount == 0) {
         NUMBER_IDENTITY_LOGI("No network.");
         Clear();
@@ -73,7 +73,7 @@ int NetworkInfo::Refresh()
         return errCode;
     });
     const auto &ips = info.netAddrList_;
-    NUMBER_IDENTITY_LOGD("Got netAddrList size = %{public}ld", ips.size());
+    NUMBER_IDENTITY_LOGD("Got netAddrList size = %{public}zu", ips.size());
     if (ips.begin() == ips.end()) {
         NUMBER_IDENTITY_LOGW("No ip address found.");
         return errCode;
